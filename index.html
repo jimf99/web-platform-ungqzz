@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+var str0='00f00f00f00ff00f00f00f0000f00f00f00fffffffffffff00f00f00f00ff00f00f00f0000f00f00f00ffffffffffffff00f00f00f00f00f00f00f00fffffffffffffffffffffffff00f00f00f00f00f00f00f00ffffffffffffffffffffffff';
+var str1="";
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $.ajax({url: "https://mmopaint-data.s3.eu-central-1.amazonaws.com/px8x8", success: function(result){
+      $("#div1").html(result);
+	  str1=result;
+	  doUpdate(str1);
+    }});
+  });
+});
+
+</script>
+
+</head>
+<body>
+<button>Load</button>
+<div id="div1"><h2>...</h2></div>
+<canvas id="myCanvas" width="164" height="164" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+<script>
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var x1=0;
+var y1=0;
+var str3='';
+var x=0;
+var y=0;
+var x1=2;
+var y1=2;
+var sc=20;
+
+function getPixel(x,y) {
+  var i=y*8+x;
+  var str2=str1.substr(i*3,3);
+  var r=str2.substr(0,1);
+  var g=str2.substr(1,1);
+  var b=str2.substr(2,1);
+  r=parseInt(r,16)*16;
+  g=parseInt(g,16)*16;
+  b=parseInt(b,16)*16;
+  return ("#"+toHex(r)+toHex(g)+toHex(b));
+}
+
+function setPixel(x,y,bg,fg) {
+  ctx.fillStyle = bg;
+  ctx.fillRect(x1+x*sc-2, y1+y*sc-2,sc+2,sc+2);
+  ctx.fillStyle = fg;
+  ctx.fillRect(x1+x*sc, y1+y*sc,(sc-2),(sc-2));
+}
+
+function toHex(val) {
+ var val1=val.toString(16);
+ if(val<=9) {val1="0"+val1;}
+ return(val1);
+}
+
+function doUpdate() {
+  var x=0;
+  var y=0;
+  for(j=0; j<64; j++) {
+    var bg="#ffffff";
+    var fg=getPixel(x,y);
+    setPixel(x,y,bg,fg);
+    x=x+1;
+    if(x>=8) {x=0;y=y+1;}
+  }
+}
+str1=str0;
+doUpdate(str1);
+</script>
+</body>
+</html>
